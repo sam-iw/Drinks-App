@@ -5,6 +5,7 @@ import DrinksApp.persistence.save as persave
 import DrinksApp.persistence.load as perload
 import DrinksApp.persistence.print as perprint
 
+
 os.system("Clear")
 
 people = []
@@ -51,7 +52,7 @@ def initial_function(number):
         perprint.print_list(drinks)
     elif number == "7":
         os.system("Clear")
-        add_preference()
+        add_preference(preferences)
         print(preferences)
         persave.save_csv_dictionary("persistence/preferences.csv", preferences)
         nav_options()
@@ -107,6 +108,7 @@ def nav_options():
         print("This is an invalid input, please re-select an option.")
         nav_options()
 
+
 # Generic add entry to list function.
 def type_entry(List):
     os.system("Clear")
@@ -117,6 +119,7 @@ def type_entry(List):
         List += [Entry]
         perprint.print_list(List)
         nav_options()
+
 
 # Generic delete function that includes an exception rule.
 def delete_inputs(List):
@@ -134,29 +137,15 @@ def delete_inputs(List):
         print("You have made an invalid entry.")
         nav_options()
 
-# def load_csv_dictionary(filepath,dictionary):
-#     try:
-#         with open(filepath, "r") as csvfile:
-#             csv_file = csv.reader(csvfile)
-#             for line in csv_file:
-#                 key = line[0]
-#                 value = line[1]
-#                 dictionary[key] = value
-#     except:
-#         print("oh no, an error occured, please select next option: ")
-#         nav_options()
-#     count = 1
-#     for key, value in dictionary.items():
-#         print(f" |  {count}. {key}'s drink of choice is {value}")
-#         count += 1
 
-
-def add_preference():
+def add_preference(dictionary):
     preference = input("""Add a person and preference in format of "person: drink": """)
     split_preference = preference.strip().split(": ")
     person = split_preference[0]
     drink = split_preference[1]
-    preferences[person] = (drink)
+    dictionary[person] = drink
+    return dictionary
+
 
 # Which person should a drinks preference be assigned?
 def choose_person():
@@ -165,6 +154,7 @@ def choose_person():
     print(f"You selected:  {Person_Choice}")
     return Person_Choice
 
+
 # Which drink should be assigned to each of the
 def choose_drink():
     perprint.print_list(drinks)
@@ -172,11 +162,13 @@ def choose_drink():
     print(f"You selected: {Drinks_Choice}")
     return Drinks_Choice
 
+
 def items_in_list(list):
     count = 1
     for item in list:
         print(f" | {count}. {item} |")
         count += 1
+
 
 def print_functions():
     print_choice = input("""What would you like to print:\n[A] Print People\n[B] Print Drinks\n[C] Print Preferences\n[D] Print Round\n Enter Here: """)
@@ -222,10 +214,29 @@ def generate_table(Header, list):
     outline()
 
 
-perload.load_dictionary("persistence/newround.txt", new_round)
-perload.load_csv_dictionary("persistence/preferences.csv", preferences)
-perload.load_lists("persistence/people.txt", people)
-perload.load_lists("persistence/drinks.txt", drinks)
-initial_options()
+def test_add_preference():
+    # Arrange
+    test_preferences = {}
+    test_preference = "Alex: Wine"
+    expected_outcome = {"Alex": "Wine"}
 
-SystemExit
+    # Act
+    actual_outcome = add_preference(test_preference,test_preferences)
+
+    # Assert
+    assert actual_outcome == expected_outcome, f"""
+    actual outcome = {actual_outcome}
+    expected outcome = {expected_outcome}"""
+    print("Passed the GDPR test")
+
+
+if __name__ == "__main__":
+
+
+    perload.load_dictionary("persistence/newround.txt", new_round)
+    perload.load_csv_dictionary("persistence/preferences.csv", preferences)
+    perload.load_lists("persistence/people.txt", people)
+    perload.load_lists("persistence/drinks.txt", drinks)
+    initial_options()
+
+    SystemExit
