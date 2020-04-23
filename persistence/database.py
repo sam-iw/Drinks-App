@@ -110,7 +110,7 @@ def save_drinks(list, drink_type):
             cursor.execute("INSERT INTO soft_drinks (soft_drink, soft_quantity_ml) VALUES (%s, %s)", args)
         elif drink_type == "Alcy":
             args = (drink.drink_choice, drink.drink_quantity)
-            cursor.execute("INSERT INTO alcoholic_drinks (soft_drink, soft_quantity_ml) VALUES (%s, %s)", args)
+            cursor.execute("INSERT INTO alcoholic_drinks (alcy_drink, alcy_quantity_ml) VALUES (%s, %s)", args)
         else:
             break
     connection.commit()

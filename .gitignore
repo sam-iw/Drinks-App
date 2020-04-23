@@ -1,4 +1,6 @@
 __pycache__/
+savedrounds
+.idea
 # Environments
 .env
 .venv
