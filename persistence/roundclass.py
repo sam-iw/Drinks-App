@@ -1,33 +1,37 @@
 import persistence.load as perload
 import persistence.save as persave
+from datetime import datetime
 
+
+now = datetime.now()
+time_date = now.strftime(f"%Y%m%d-%H%M%S")
 
 hot_drinks_pref = {}
 soft_drinks_pref = {}
 alcoholic_drinks_pref = {}
 
-# perload.load_hot_drinks_prefs("persistence/hotdrinksprefs.csv", hot_drinks_pref)
-# perload.load_csv_dictionary("persistence/alocoholicdrinksprefs.csv", alcoholic_drinks_pref)
-# perload.load_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
+perload.load_hot_drinks_prefs("persistence/hotdrinksprefs.csv", hot_drinks_pref)
+perload.load_csv_dictionary("persistence/alocoholicdrinksprefs.csv", alcoholic_drinks_pref)
+perload.load_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
 
-class NewRound:
-    def __init__(self, brewer_name):
-        self.brewer = brewer_name
+
+class Drinks:
+    def __init__(self, brewer):
+        self.brewer = brewer
         self.hot_round = {}
         self.soft_round = {}
         self.alcohol_round = {}
+
 
     def hot_drink_input(self, who):
         hot_drink_choice = input(f"What hot drink would {who} like?: ")
         hot_drink_milk = input(f"To you take that black or white?: ")
         hot_drink_strength = input(f"What strength would you like that?: ")
         hot_drink_sugar = input(f"How many sugars would you like?: ")
+        persave.save_hot_drinks("persistence/hotdrinksprefs.csv", hot_drinks_pref)
         self.hot_round[who] = [hot_drink_choice, hot_drink_milk, hot_drink_strength, hot_drink_sugar]
         hot_drinks_pref[who] = (hot_drink_choice, hot_drink_milk, hot_drink_strength, hot_drink_sugar)
-        persave.save_hot_drinks("persistence/hotdrinksprefs.csv", hot_drinks_pref)
 
-
-class Drinks:
     def hot_drinks(self):
         try:
             brewer_hot_drink = hot_drinks_pref[self.brewer]
@@ -48,6 +52,7 @@ class Drinks:
             if drinker == "":  # Break out from the loop when user hits ENTER
                 break
             self.hot_drink_input(drinker)
+        persave.save_csv_dictionary(f"savedrounds/{time_date}_{self.brewer}_hot_round.csv", self.hot_round)
         print(self.hot_round)
 
     def soft_drinks(self):
@@ -76,7 +81,8 @@ class Drinks:
             soft_drink_choice = input(f"What soft drink would {drinker} like?: ")
             self.soft_round[drinker] = (soft_drink_choice)
             soft_drinks_pref[drinker] = (soft_drink_choice)
-            persave.save_csv_dictionary("persistence/soft_drinks_pref.csv", soft_drinks_pref)
+            persave.save_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
+        persave.save_csv_dictionary(f"savedrounds/{time_date}_{self.brewer.lower()}_soft_round.csv", self.soft_round)
         print(self.soft_round)
 
     def alcoholic_drinks(self):
@@ -107,6 +113,7 @@ class Drinks:
             soft_drinks_pref[drinker] = (alcoholic_drink_choice)
             persave.save_csv_dictionary("persistence/alcoholic_drinks_pref.csv", alcoholic_drinks_pref)
         print(self.alcohol_round)
+        persave.save_csv_dictionary(f"savedrounds/{time_date}_{self.brewer.lower()}_alcohol_round.csv", self.alcohol_round)
 
 
 # class Person:
@@ -118,8 +125,3 @@ class Drinks:
 #
 #     def print(self):
 #         print(f"{self.first_name}, {self.surname}, {self.age}")
-
-
-
-# my_round = NewRound("Sam")
-# my_round.hot_drinks()

@@ -1,4 +1,4 @@
-import DrinksApp20200404 as app
+from SS import DrinksApp20200404 as app
 import unittest.mock
 
 
