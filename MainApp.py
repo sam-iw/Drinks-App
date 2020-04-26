@@ -8,6 +8,8 @@ import persistence.database as perdb
 import ETL.extract as etlextract
 import ETL.transform as etltransform
 import ETL.load as etlload
+from persistence.database import Person, HotDrinks, SoftDrinks, AlcyDrinks
+
 
 os.system("Clear")
 
@@ -27,42 +29,33 @@ time = currentDT.strftime("%H:%M")
 def initial_options():
     os.system("Clear") #Remove / Refresh screen
     print("Welcome to the BrIW app")
-    result = input("""Please select which option you would like to use:\n[1] People List\n[2] Drinks List\n[3] Add Person\n[4] Add Drink\n[5] Delete People\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Function (menu)\n[9] Take Round\n[10] Clean CSV \n[11] Exit App \nEnter Here: """)
+    result = input("""Please select which option you would like to use:\n[1] Search People List\n[2] Search Drinks List\n[3] Add Person\n[4] Add Drink\n[5] Delete Person\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Function (menu)\n[9] Take Round\n[10] Clean CSV \n[11] Exit App \nEnter Here: """)
     initial_function(result) #evokes the if function (menu) within the "Initial_Function"
 
 # Defines what outcome is associated with each input from initial options
 def initial_function(number):
-    if number == "1":
+    if number == "1": # Search person
         os.system("Clear")
-        print("These are the people on the app: ")
-        perprint.print_class_dict(people)
+        s1_search_people()
+    elif number == "2": # Search drinks
+        os.system("Clear")
+        s2_search_drinks()
+    elif number == "3": # Create Person
+        os.system("Clear")
+        s3_create_person()
+    elif number == "4": # Create Drink
+        os.system("Clear")
+        s4_add_drinks()
         nav_options()
-    elif number == "2":
+    elif number == "5": # Delete Person
         os.system("Clear")
-        print_drinks_list()
-        nav_options()
-    elif number == "3":
+        s5_delete_person()
+    elif number == "6": # Delete Drinks
         os.system("Clear")
-        people.append(create_person())
-        perprint.print_class_dict(people)
-        perdb.save_people(people)
-        nav_options()
-    elif number == "4":
-        os.system("Clear")
-        add_drinks_options()
-        nav_options()
-        # type_entry(drinks)
-        # persave.save_list("persistence/drinks.txt", drinks)
-        # perprint.print_list(drinks)
-    elif number == "5":
-        os.system("Clear")
-        delete_inputs(people)
-        perprint.print_list(people)
-    elif number == "6":
-        os.system("Clear")
+        s6_delete_drinks_type()
         # delete_inputs(drinks)
         # perprint.print_list(drinks)
-    elif number == "7":
+    elif number == "7": # Choose Drinks Prefs
         os.system("Clear")
         drinks_pref_menu()
         nav_options()
@@ -88,13 +81,14 @@ def initial_function(number):
         initial_options()
 
 
-def print_drinks_list():
-    print("""These are the drinks available on the app \nHOT DRINKS: """)
+def print_drinks_lists():
+    print("""\nThese are the drinks available on the app \nHOT DRINKS: """)
     perprint.print_class_dict(hot_drinks)
     print("\nSOFT DRINKS: ")
     perprint.print_class_dict(soft_drinks)
     print("\nALCOHOLIC DRINKS: ")
     perprint.print_class_dict(alcoholic_drinks)
+
 
 def nav_options(): # Once operation is complete what will the user want to do next? (if function)
     numbertwo = input("""\nPlease select your next option:\n[1] Return to main menu\n[2] Exit the app\nEnter Here: """)
@@ -110,7 +104,66 @@ def nav_options(): # Once operation is complete what will the user want to do ne
         nav_options()
 
 
-def add_drinks_options():
+def s1_search_people():
+    people = perdb.load_tables("people")
+    search_entry = str(input(f"\nWho would you like to search for? Enter first name, surname or age. "
+                             f"(Hit ENTER to quit), \nEnter here: ").capitalize())
+    for person in people:
+        if search_entry == "":
+            break
+        elif search_entry in (person.first_name, person.surname, person.age):
+            print(f"{person.first_name} {person.surname}, {person.age}")
+        else:
+            continue
+    not_found = input(f"Did the find who you were after? if not press A to add a new person (Hit ENTER to quit)"
+                      f"\nEnter here: ")
+    if not_found == "A":
+        s3_create_person()
+    else:
+        nav_options()
+
+
+def s2_search_drinks():
+    drink_type = input(f"Which type of drink would you like to search for? (Hit ENTER to quit)\n[1] Hot Drinks \n[2] Soft Drinks \n[3] Alcoholic Drinks \nEnter here: ")
+    # search_entry = str(input(f"\nWhat drink would you like to search for? (Hit ENTER to quit)\nEnter here: ").capitalize())
+    if drink_type == "":
+        nav_options()
+    elif drink_type == "1":
+        hot_drinks = perdb.load_tables("hot_drinks")
+        for drink in hot_drinks:
+            search_entry = str(input(f"\nWhat drink would you like to search for? (Hit ENTER to quit)\nEnter here: ").capitalize().strip())
+            if search_entry in drink.drink_choice:
+                print(f"{drink.drink_choice}, {drink.milk_choice}, {drink.strength_choice}, {drink.sugar_choice}")
+            else:
+                error = input(f"\nThis drink was not found, try again or hit ENTER to exit:")
+                if error == "":
+                    nav_options()
+                else:
+                    nav_options()
+    elif drink_type == "2":
+        # soft_drinks = perdb.load_tables("soft_drinks")
+        search_entry = str(input(f"\nWhat drink would you like to search for? (Hit ENTER to quit)\nEnter here: ").capitalize())
+        for drink in soft_drinks:
+            if search_entry in (drink.drink_choice, drink.drink_quantity):
+                print(f"{drink.drink_choice}, {drink.drink_quantity} ml")
+            else:
+                nav_options()
+    elif drink_type == "3":
+        alcoholic_drinks = perdb.load_tables("alcoholic_drinks")
+        # search_entry = str(input(f"\nWhat drink would you like to search for? (Hit ENTER to quit)\nEnter here: ").capitalize())
+        for drink in alcoholic_drinks:
+            if search_entry in (drink.drink_choice, drink.drink_quantity):
+                print(f"{drink.drink_choice}, {drink.drink_quantity} ml")
+            else:
+                nav_options()
+    else:
+        nav_options()
+        # print(f"Sorry this was an invalid entry, what would you like to do next?")
+        # nav_options()
+    nav_options()
+
+
+def s4_add_drinks():
     drink_type = input(f"What type of drink would you like to input:\n[1] Hot Drink\n[2] Soft Drink\n[3] Alcoholic "
                        f"\n(Hit ENTER to quit)  ")
     while True:
@@ -122,7 +175,7 @@ def add_drinks_options():
             drink_choice = input("What hot drink would you like to add?: ")
             milk_choice = input(f"Is that {drink_choice} white or black?: ")
             strength_choice = input(f"What strength should the {drink_choice} be?: ")
-            sugar_choice = int(input(f"How many sugars would the {drink_choice} need? (Enter a numerical unit): "))
+            sugar_choice = int(input(f"How many sugars does the {drink_choice} have? (Enter number of teaspoons): "))
             new_hot_drink = perdb.HotDrinks(drink_choice, milk_choice, strength_choice, sugar_choice)
             perdb.save_drinks([new_hot_drink], "Hot")
             hot_drinks.append(new_hot_drink)
@@ -147,9 +200,62 @@ def add_drinks_options():
             return new_alcy_drink
         else:
             break
-        # print(perdb.AlcyDrinks(drink_choice,drink_quantity))
     nav_options()
 
+
+def s5_delete_person():
+    people_list = perdb.load_tables("people")
+    delete_person = str(input("Type the first and last name of the person you would like to delete : ").capitalize().strip())
+    split_delete_person = delete_person.split(", ")
+    first_name = split_delete_person[0]
+    surname = split_delete_person[1].capitalize()
+    for person in people_list:
+        if delete_person == "":
+            break
+        elif (first_name, surname) == (person.first_name, person.surname):
+            delete_confirmation = input(f"{person.first_name} {person.surname}, {person.age} was located, are you sure "
+                                        f"you want to delete them? Enter Y/N \nEnter here: ")
+            if delete_confirmation == "Y":
+                perdb.delete_person(person)
+            else:
+                continue
+        else:
+            break
+    nav_options()
+
+
+def s6_delete_drinks_type():
+    drink_type = input(f"What type of drink would you like to delete?\n[1] Hot Drink\n[2] Soft Drink\n[3] Alcoholic "
+                       f"Drink (Hit ENTER to quit)  ")
+    if drink_type == "1":
+        hot_drinks = perdb.load_tables("hot_drinks")
+        delete_drink = str(input("What hot drink would you like to delete?").capitalize())
+        for hotdrinks in hot_drinks:
+            if delete_drink == "":
+                break
+            elif delete_drink == hotdrinks.drink_choice:
+                print(f"{hotdrinks.id}")
+                perdb.delete_drinks("Hot", hotdrinks)
+    elif drink_type == "2":
+        soft_drinks = perdb.load_tables("soft_drinks")
+        delete_drink = str(input("What soft drink would you like to delete?").capitalize())
+        for softdrinks in soft_drinks:
+            if delete_drink == "":
+                break
+            elif delete_drink == softdrinks.drink_choice:
+                print(f"{softdrinks.id}")
+                perdb.delete_drinks("Soft", softdrinks)
+    elif drink_type == "3":
+        delete_drink = str(input("What alcoholic drink would you like to delete?").capitalize())
+        for alcydrinks in alcoholic_drinks:
+            if delete_drink == "":
+                break
+            elif delete_drink == alcydrinks.drink_choice:
+                print(f"{alcydrinks.id}")
+                perdb.delete_drinks("Alcy", alcydrinks)
+        else:
+            nav_options()
+    nav_options()
 
 def round_type():
     brewer = input("Who would like to create a round? \nEnter Here: ")
@@ -189,16 +295,18 @@ def drinks_pref_menu():
         nav_options()
 
 
-def create_person():
+def s3_create_person():
     while True:
         first_name = input("What it the first name of the the person you would like to add to the app?: (Hit "
                            "ENTER to quit) ")
         if first_name == "":  # Break out from the loop when user hits ENTER
-            break
+            nav_options()
         surname = input(f"What is {first_name}'s surname? ")
         age = int(input(f"What is {first_name}'s age? "))
-        return perdb.Person(first_name, surname, age)
-
+        new_person = perdb.Person(first_name, surname, age)
+        people.append(new_person)
+        perdb.save_people(new_person)
+        nav_options()
 
 
 # Generic add entry to list function.
@@ -213,21 +321,22 @@ def type_entry(List):
         nav_options()
 
 
+
 # Generic delete function that includes an exception rule.
-def delete_inputs(List):
-    os.system("Clear")
-    print("Below is a list of items currently stored in the app, which would you like to delete?")
-    perprint.print_list(List)
-    Deletions = input ("Enter what to delete: ")
-    try:
-        for Deletion in Deletions.split(", "):
-            List.remove(Deletion)
-        print("The remaining items stored in the app are below:")
-        perprint.print_list(List)
-        nav_options()
-    except:
-        print("You have made an invalid entry.")
-        nav_options()
+# def delete_inputs(List):
+#     os.system("Clear")
+#     print("Below is a list of items currently stored in the app, which would you like to delete?")
+#     perprint.print_list(List)
+#     Deletions = input ("Enter what to delete: ")
+#     try:
+#         for Deletion in Deletions.split(", "):
+#             List.remove(Deletion)
+#         print("The remaining items stored in the app are below:")
+#         perprint.print_list(List)
+#         nav_options()
+#     except:
+#         print("You have made an invalid entry.")
+#         nav_options()
 
 
 def add_hot_drink_prefs():
@@ -285,7 +394,7 @@ def print_functions():
         perprint.print_class_dict(people)
     elif print_choice == "B":
         os.system("Clear")
-        # perprint.print_list(drinks)
+        print_drinks_lists()
     elif print_choice == "C":
         os.system("Clear")
         print(" |  Hot Drinks Preferences  |")
@@ -351,7 +460,7 @@ def generate_table(Header, list):
 #     expected outcome = {expected_outcome}"""
 #     print("Passed the GDPR test")
 
-
+#
 if __name__ == "__main__":
     perload.load_dictionary("persistence/newround.txt", new_round)
     perload.load_hot_drinks_prefs("persistence/hotdrinksprefs.csv", hot_drinks_pref)
@@ -363,7 +472,6 @@ if __name__ == "__main__":
     alcoholic_drinks = perdb.load_tables("alcoholic_drinks")
 
 
-    # perload.load_lists("persistence/drinks.txt", drinks)
     initial_options()
 
-    SystemExit
+    # SystemExit
