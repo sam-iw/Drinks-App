@@ -1,7 +1,7 @@
 # Load
 
 import pymysql
-from ETL.customers import Customer
+from ETL.customerclass import Customer
 import persistence.database as perdb
 
 def load_customers():

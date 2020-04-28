@@ -30,6 +30,7 @@ def save_hot_drinks(filepath, dictionary):
         print(error)
         print("An error occurred (sorry:CSV)")
 
+
 def save_dictionary(filepath, dictionary):
     try:
         with open(filepath, "w") as dictionary_file:
