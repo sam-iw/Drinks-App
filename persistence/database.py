@@ -5,7 +5,8 @@ db_people_list = []
 db_drinks_list = []
 people = []
 
-def get_connection(): # function to get the connection string using: pymysql.connect(host, username, password, database)
+
+def get_connection():# function to get the connection string using: pymysql.connect(host, username, password, database)
     db_connection = pymysql.connect(
         environ.get('DB_HOST'), #host
         environ.get('DB_USER'), #username
@@ -88,108 +89,98 @@ def load_tables(tables):
 
 
 def save_people(person):
-    connection = get_connection()
-    cursor = connection.cursor()
-    # for person in people:
     if person.id == None:
         args = (person.first_name, person.surname, person.age)
-        cursor.execute("INSERT INTO people (drinker_first_name, drinker_surname, drinker_age) VALUES (%s, %s, %s)",
-                       args)
+        sql_query = "INSERT INTO people (drinker_first_name, drinker_surname, drinker_age) VALUES (%s, %s, %s)"
+        save_sql(sql_query, args)
         print(f"{person.first_name} {person.surname}, {person.age} was saved to BrIW")
+
+
+def save_sql(sql_query, args):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(sql_query, args)
     connection.commit()
     cursor.close()
     connection.close()
 
 
 def save_drinks(list, drink_type):
-    connection = get_connection()
-    cursor = connection.cursor()
     for drink in list:
         if drink_type == "Hot":
             args = (drink.drink_choice, drink.milk_choice, drink.strength_choice, drink.sugar_choice)
-            cursor.execute("INSERT INTO hot_drinks (hot_drink, milk, drink_strength, sugar) VALUES (%s, %s, %s, %s)", args)
+            sql_query = "INSERT INTO hot_drinks (hot_drink, milk, drink_strength, sugar) VALUES (%s, %s, %s, %s)"
+            save_sql(sql_query, args)
             print(f"{drink.drink_choice}, with {drink.milk_choice} milk, {drink.strength_choice} with "
                   f"{drink.sugar_choice} sugar(s) has been saved to BrIW.")
         elif drink_type == "Soft":
             args = (drink.drink_choice, drink.drink_quantity)
-            cursor.execute("INSERT INTO soft_drinks (soft_drink, soft_quantity_ml) VALUES (%s, %s)", args)
+            sql_query = "INSERT INTO soft_drinks (soft_drink, soft_quantity_ml) VALUES (%s, %s)"
+            save_sql(sql_query, args)
             print(f"{drink.drink_choice}, {drink.drink_quantity}ml has been saved to BrIW.")
         elif drink_type == "Alcy":
             args = (drink.drink_choice, drink.drink_quantity)
-            cursor.execute("INSERT INTO alcoholic_drinks (alcy_drink, alcy_quantity_ml) VALUES (%s, %s)", args)
+            sql_query = "INSERT INTO alcoholic_drinks (alcy_drink, alcy_quantity_ml) VALUES (%s, %s)"
+            save_sql(sql_query, args)
             print(f"{drink.drink_choice}, {drink.drink_quantity}ml has been saved to BrIW.")
         else:
             break
-    connection.commit()
-    cursor.close()
-    connection.close()
 
 
 def delete_person(person):
-    # people_list = load_tables("people")
-    connection = get_connection()
-    cursor = connection.cursor()
-    args = (person.id)
-    cursor.execute("DELETE FROM people WHERE id=%s", args)  # %s prevents SQL injection!
+    args = person.id
+    sql_query = "DELETE FROM people WHERE id=%s"  # %s prevents SQL injection!
+    save_sql(sql_query, args)
     print(f"{person.first_name} {person.surname} was deleted")
-    connection.commit()    
-    cursor.close()
-    connection.close()
+
 
 
 def delete_drinks(drinks_type, drinks_class):
-    connection = get_connection()
-    cursor = connection.cursor()
     if drinks_type == "Hot":
-        args = (drinks_class.id)
-        cursor.execute("DELETE FROM hot_drinks WHERE id=%s", args)  # %s prevents SQL injection!
+        args = drinks_class.id
+        sql_query = "DELETE FROM hot_drinks WHERE id=%s"  # %s prevents SQL injection!
+        save_sql(sql_query, args)
         print(f"{drinks_class.drink_choice} was deleted")
     elif drinks_type == "Soft":
-        args = (drinks_class.id)
-        cursor.execute("DELETE FROM soft_drinks WHERE id=%s", args)  # %s prevents SQL injection!
+        args = drinks_class.id
+        sql_query = "DELETE FROM soft_drinks WHERE id=%s"  # %s prevents SQL injection!
+        save_sql(sql_query, args)
         print(f"{drinks_class.drink_choice} was deleted")
     elif drinks_type == "Alcy":
-        args = (drinks_class.id)
-        cursor.execute("DELETE FROM alcoholic_drinks WHERE id=%s", args)  # %s prevents SQL injection!
+        args = drinks_class.id
+        sql_query = "DELETE FROM alcoholic_drinks WHERE id=%s"  # %s prevents SQL injection!
+        save_sql(sql_query, args)
         print(f"{drinks_class.drink_choice} was deleted")
-    connection.commit()
-    cursor.close()
-    connection.close()
+    else:
+        return
 
 
-    # hot_drinks = load_tables("hot_drinks")
-    # # connection = get_connection()
-    # # cursor = connection.cursor()
-    # if drinks_class == hotdrinks:
-    #     print(f"{hot_drinks.id}")
-
-
-def update_sql(self, sql_string, args):
-    connection = self.get_connection()
-    with connection.cursor() as cursor:
-        cursor.execute(sql_string, args)
-    connection.commit()
-    connection.close()
-
-
-def sql_load_all(self, sql_string):
-    connection = self.get_connection()
-    sql_load_list = []
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(sql_string)
-        connection.commit()
-        while True:
-            row = cursor.fetchone()
-            if row == None:
-                break
-            else:
-                sql_load_list.append(row)
-        return(sql_load_list)
-    except Exception as error:
-        print(f"Unable to return all: \n{error}")
-    finally:
-        connection.close()
+# def update_sql(self, sql_string, args):
+#     connection = self.get_connection()
+#     with connection.cursor() as cursor:
+#         cursor.execute(sql_string, args)
+#     connection.commit()
+#     connection.close()
+#
+#
+# def sql_load_all(self, sql_string):
+#     connection = self.get_connection()
+#     sql_load_list = []
+#     try:
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql_string)
+#         connection.commit()
+#         while True:
+#             row = cursor.fetchone()
+#             if row == None:
+#                 break
+#             else:
+#                 sql_load_list.append(row)
+#         return(sql_load_list)
+#     except Exception as error:
+#         print(f"Unable to return all: \n{error}")
+#     finally:
+#         connection.close()
 
 
 
