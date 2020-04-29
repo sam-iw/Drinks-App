@@ -30,10 +30,7 @@ def load_csv_dictionary(filepath, dictionary):
                 dictionary[key] = value
     except:
         print("oh no, an error occured, please select next option: ")
-    count = 1
-    for key, value in dictionary.items():
-        print(f" |  {count}. {key}'s drink of choice is {value}")
-        count += 1
+
 
 
 def load_hot_drinks_prefs(filepath, dictionary):
