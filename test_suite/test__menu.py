@@ -1,30 +1,10 @@
 import MainApp as app
 import unittest.mock
+from persistence.database import Person
+from unittest.mock import Mock
 
 
 class TestMenu(unittest.TestCase):
-
-    # @unittest.mock.patch("persistence.load_tables", return_value=unittest.mock)
-    # @unittest.mock.patch("builtins.input", return_value=unittest.mock)
-    # def test_search_people(self, mock_input, mock_table):
-    #     # Arrange
-    #     mock_input.side_effect = ["Testy"]
-    #     mock_person = Mock(Person)
-    #     mock_person.first_name = "Testy"
-    #     mock_person.surname = "McTest"
-    #     mock_person.age = 22
-    #     mock_person.id = None
-    #     mock_table = ["Testy", "McTest", 22, None]
-    #     expected_outcome = ["Testy", "McTest", 22, None]
-    #
-    #     # Act
-    #     actual_outcome = app.s1_search_people(search_entry="Testy")
-    #
-    #     # Assert
-    #     print(f"Expected outcome: {expected_outcome}"
-    #           f"Actual outcome: {actual_outcome}")
-    #     self.assertEqual(expected_outcome, actual_outcome)
-
 
     @unittest.mock.patch("MainApp.initial_function")
     @unittest.mock.patch("builtins.input", return_value=unittest.mock)
