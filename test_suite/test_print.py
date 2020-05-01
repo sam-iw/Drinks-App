@@ -1,7 +1,7 @@
 import unittest.mock
-from src import persistence as prin
+import persistence.print as prin
 import io
-from src.persistence import HotDrinks, SoftDrinks, Person
+from persistence.database import HotDrinks, SoftDrinks, Person
 
 
 class TestPrint(unittest.TestCase):

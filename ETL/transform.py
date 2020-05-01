@@ -1,6 +1,6 @@
 # Transform
 
-from src.ETL.extract import csv_load
+from ETL.extract import csv_load
 from datetime import date
 
 title_list = ["miss", "ms", "mrs", "mr", "dr"]

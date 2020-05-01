@@ -1,8 +1,8 @@
 # Load
 
-from src.ETL.customerclass import Customer
-from src import persistence as perdb
-
+import pymysql
+from ETL.customerclass import Customer
+import persistence.database as perdb
 
 def load_customers():
     connection = perdb.get_connection()

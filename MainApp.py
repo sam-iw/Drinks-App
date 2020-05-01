@@ -1,7 +1,11 @@
 import os
 import datetime
-from src import persistence as persave, persistence as perload, persistence as perprint, persistence as perround, \
-    persistence as perdb
+import persistence.save as persave
+import persistence.load as perload
+import persistence.print as perprint
+import persistence.roundclass as perround
+import persistence.database as perdb
+
 
 os.system("Clear")
 
@@ -20,9 +24,9 @@ time = currentDT.strftime("%H:%M")
 # Asks for user input which equals result, returns a string
 def initial_options():
     header("Welcome to the BrIW app!")
-    result = input("""Please select which option you would like to use:\n[1] Search People List\n[2] Search Drinks List
-    \n[3] Add Person\n[4] Add Drink\n[5] Delete Person\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Functions 
-    \n[9] Take Round\n[10] Exit App \nEnter Here: """)
+    result = input(f"Please select which option you would like to use:\n[1] Search People List\n[2] Search Drinks List\n"
+                   f"[3] Add Person\n[4] Add Drink\n[5] Delete Person\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Functions"
+                   f"\n[9] Take Round\n[10] Exit App \nEnter Here: ")
     initial_function(result)# evokes the if function (menu) within the "Initial_Function"
 
 
@@ -73,18 +77,19 @@ def s1_search_people():
     try:
         for person in people:
             if search_entry == "":
-                break
+                sn_nav_options()
             elif search_entry in (person.first_name, person.surname, person.age):
                 print(f"{person.first_name} {person.surname}, {person.age}")
             else:
                 continue
     except:
         print("Sorry")
-        not_found = input(f"\nWould you like to add someone? Y/N (Hit ENTER to quit) \nEnter here: ")
-        if not_found == "Y":
-            s3_create_person()
-        else:
-            sn_nav_options()
+    not_found = input(f"\nWould you like to add someone new? Y/N (Hit ENTER to quit) \nEnter here: ")
+    if not_found == "Y":
+        s3_create_person()
+    else:
+        sn_nav_options()
+    sn_nav_options()
 
 
 def s2_search_drinks():
@@ -205,16 +210,16 @@ def s4_add_drinks():
 
 
 def s5_delete_person():
-    header("    Search People")
+    header("    Delete People")
     people_list = perdb.load_tables("people")
     delete_person = str(input("Type the first and last name of the who you want to delete\nEnter here: ").capitalize().strip())
-    split_delete_person = delete_person.split(", ")
+    split_delete_person = delete_person.split(" ")
     first_name = split_delete_person[0]
     surname = split_delete_person[1].capitalize()
     for person in people_list:
         if delete_person == "":
             break
-        elif (first_name, surname) == (person.first_name, person.surname):
+        elif (first_name.upper(), surname.upper()) == (person.first_name.upper(), person.surname.upper()):
             delete_confirmation = input(f"{person.first_name} {person.surname}, {person.age} was located, are you sure "
                                         f"you want to delete them? Enter Y/N \nEnter here: ")
             if delete_confirmation == "Y":
@@ -222,14 +227,14 @@ def s5_delete_person():
             else:
                 continue
         else:
-            break
+            continue
     sn_nav_options()
 
 
 def s6_delete_drinks_type():
     header("    Delete Drinks")
-    drink_type = input(f"What type of drink would you like to delete?\n[1] Hot Drink\n[2] Soft Drink\n[3] Alcoholic "
-                       f"Drink (Hit ENTER to quit)  ")
+    drink_type = input(f"What type of drink would you like to delete?\n(Hit ENTER to quit)\n[1] Hot Drink\n[2] Soft "
+                       f"Drink\n[3] Alcoholic Drink\nEnter here: ")
     if drink_type == "1":
         hot_drinks = perdb.load_tables("hot_drinks")
         delete_drink = str(input("What hot drink would you like to delete?").capitalize())
@@ -260,8 +265,8 @@ def s6_delete_drinks_type():
 
 def s7_drinks_pref_menu():
     header("   Drinks Preferences")
-    preferences_selection = input("""What type of drinks preference would you like to add? \n[A] Hot Drink \n
-    [B] Soft Drink \n[C] Alcoholic Drink \nEnter Here: """)
+    preferences_selection = input(f"What type of drinks preference would you like to add? \n[A] Hot Drink \n[B] Soft Drink"
+                                  f"\n[C] Alcoholic Drink \nEnter Here: ")
     try:
         if preferences_selection == "A":
             header("Stored Alcoholic Drinks")
@@ -274,14 +279,14 @@ def s7_drinks_pref_menu():
             print("To overwrite a preference simply retype their preference as below.")
             perprint.print_soft_or_alcy_dicts(soft_drinks_pref)
             s7b_add_soft_or_alcy_prefs(soft_drinks_pref)
-            persave.save_csv_dictionary("src/persistence/softdrinksprefs.csv", soft_drinks_pref)
+            persave.save_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
             sn_nav_options()
         elif preferences_selection == "C":
             header("Stored Alcoholic Drinks")
             print("To overwrite a preference simply retype their preference as below.")
             perprint.print_soft_or_alcy_dicts(alcoholic_drinks_pref)
             s7b_add_soft_or_alcy_prefs(alcoholic_drinks_pref)
-            persave.save_csv_dictionary("src/persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
+            persave.save_csv_dictionary("persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
             sn_nav_options()
         else:
             os.system("Clear")
@@ -302,7 +307,7 @@ def s7a_add_hot_drink_prefs():
             hot_drink_strength = input(f"What strength would you like that?: ")
             hot_drink_sugar = input(f"How many sugars would you like?: ")
             hot_drinks_pref[person] = [hot_drink_choice, hot_drink_milk, hot_drink_strength, hot_drink_sugar]
-            persave.save_hot_drinks("src/persistence/hotdrinksprefs.csv", hot_drinks_pref)
+            persave.save_hot_drinks("persistence/hotdrinksprefs.csv", hot_drinks_pref)
             return hot_drinks_pref
     sn_nav_options()
 
@@ -406,9 +411,9 @@ def header(header_text):
 
 
 if __name__ == "__main__":
-    perload.load_hot_drinks_prefs("src/persistence/hotdrinksprefs.csv", hot_drinks_pref)
-    perload.load_csv_dictionary("src/persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
-    perload.load_csv_dictionary("src/persistence/softdrinksprefs.csv", soft_drinks_pref)
+    perload.load_hot_drinks_prefs("persistence/hotdrinksprefs.csv", hot_drinks_pref)
+    perload.load_csv_dictionary("persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
+    perload.load_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
     people = perdb.load_tables("people")
     hot_drinks = perdb.load_tables("hot_drinks")
     soft_drinks = perdb.load_tables("soft_drinks")
