@@ -1,7 +1,5 @@
 import MainApp as app
 import unittest.mock
-from persistence.database import Person
-from unittest.mock import Mock
 
 
 class TestMenu(unittest.TestCase):

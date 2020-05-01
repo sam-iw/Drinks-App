@@ -1,11 +1,7 @@
 import os
 import datetime
-import persistence.save as persave
-import persistence.load as perload
-import persistence.print as perprint
-import persistence.roundclass as perround
-import persistence.database as perdb
-
+from src import persistence as persave, persistence as perload, persistence as perprint, persistence as perround, \
+    persistence as perdb
 
 os.system("Clear")
 
@@ -24,7 +20,9 @@ time = currentDT.strftime("%H:%M")
 # Asks for user input which equals result, returns a string
 def initial_options():
     header("Welcome to the BrIW app!")
-    result = input("""Please select which option you would like to use:\n[1] Search People List\n[2] Search Drinks List\n[3] Add Person\n[4] Add Drink\n[5] Delete Person\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Function (menu)\n[9] Take Round\n[10] Exit App \nEnter Here: """)
+    result = input("""Please select which option you would like to use:\n[1] Search People List\n[2] Search Drinks List
+    \n[3] Add Person\n[4] Add Drink\n[5] Delete Person\n[6] Delete Drinks\n[7] Choose Preferences\n[8] Print Functions 
+    \n[9] Take Round\n[10] Exit App \nEnter Here: """)
     initial_function(result)# evokes the if function (menu) within the "Initial_Function"
 
 
@@ -163,31 +161,43 @@ def s4_add_drinks():
         if drink_type == "":  # Break out from the loop when user hits ENTER
             sn_nav_options()
         elif drink_type == "1":
-            print(f"Below is a list of hot drinks in BrIW")
-            perprint.print_class_dict(hot_drinks)
+            header(f"Hot drinks in BrIW")
+            perprint.print_hot_drinks(perdb.load_tables("hot_drinks"))
+            print_line()
             drink_choice = str(input("\nWhat hot drink would you like to add?: ").title())
-            milk_choice = str(input(f"Is that {drink_choice} white or black?: ").lower())
-            strength_choice = str(input(f"What strength should the {drink_choice} be?: ").lower())
-            sugar_choice = int(input(f"How many sugars does the {drink_choice} have? (Enter number of teaspoons): "))
-            new_hot_drink = perdb.HotDrinks(drink_choice, milk_choice, strength_choice, sugar_choice)
-            perdb.save_drinks([new_hot_drink], "Hot")
-            hot_drinks.append(new_hot_drink)
+            if drink_choice == "":
+                sn_nav_options()
+            else:
+                milk_choice = str(input(f"Is that {drink_choice} white or black?: ").lower())
+                strength_choice = str(input(f"What strength should the {drink_choice} be?: ").lower())
+                sugar_choice = int(input(f"How many sugars does the {drink_choice} have? (Enter number of teaspoons): "))
+                new_hot_drink = perdb.HotDrinks(drink_choice, milk_choice, strength_choice, sugar_choice)
+                perdb.save_drinks([new_hot_drink], "Hot")
+                hot_drinks.append(new_hot_drink)
         elif drink_type == "2":
-            print(f"\nBelow is a list of soft drinks in BrIW\n")
-            perprint.print_class_dict(soft_drinks)
-            drink_choice = str(input(f"What soft drink would you like to add?: ").title())
-            drink_quantity = input(f"What {drink_choice} quantity would you like to save (in ml)?: ")
-            new_soft_drink = perdb.SoftDrinks(drink_choice, drink_quantity)
-            perdb.save_drinks([new_soft_drink], "Soft")
-            soft_drinks.append(new_soft_drink)
+            header(f"Soft drinks in BrIW")
+            perprint.print_soft_or_alcy_drinks(perdb.load_tables("soft_drinks"))
+            print_line()
+            drink_choice = str(input(f"\nWhat soft drink would you like to add?: ").title())
+            if drink_choice == "":
+                sn_nav_options()
+            else:
+                drink_quantity = input(f"What {drink_choice} quantity would you like to save (in ml)?: ")
+                new_soft_drink = perdb.SoftDrinks(drink_choice, drink_quantity)
+                perdb.save_drinks([new_soft_drink], "Soft")
+                soft_drinks.append(new_soft_drink)
         elif drink_type == "3":
-            print(f"\nBelow is a list of alcoholic drinks in BrIW\n")
-            perprint.print_class_dict(alcoholic_drinks)
-            drink_choice = str(input(f"What alcoholic drink would you like to save?: ").title())
-            drink_quantity = input(f"What {drink_choice} quantity would you like to save (in ml)?: ")
-            new_alcy_drink = perdb.AlcyDrinks(drink_choice, drink_quantity)
-            perdb.save_drinks([new_alcy_drink], "Alcy")
-            alcoholic_drinks.append(new_alcy_drink)
+            header(f"Alcoholic drinks in BrIW")
+            perprint.print_soft_or_alcy_drinks(perdb.load_tables("alcoholic_drinks"))
+            print_line()
+            drink_choice = str(input(f"\nWhat alcoholic drink would you like to save?: ").title())
+            if drink_choice == "":
+                sn_nav_options()
+            else:
+                drink_quantity = input(f"What {drink_choice} quantity would you like to save (in ml)?: ")
+                new_alcy_drink = perdb.AlcyDrinks(drink_choice, drink_quantity)
+                perdb.save_drinks([new_alcy_drink], "Alcy")
+                alcoholic_drinks.append(new_alcy_drink)
         else:
             sn_nav_options()
     except:
@@ -250,38 +260,29 @@ def s6_delete_drinks_type():
 
 def s7_drinks_pref_menu():
     header("   Drinks Preferences")
-    preferences_selection = input("""What type of drinks preference would you like to add? \n[A] Hot Drink \n[B] 
-    Soft Drink \n[C] Alcoholic Drink \nEnter Here: """)
+    preferences_selection = input("""What type of drinks preference would you like to add? \n[A] Hot Drink \n
+    [B] Soft Drink \n[C] Alcoholic Drink \nEnter Here: """)
     try:
         if preferences_selection == "A":
-            os.system("Clear")
-            print("These are the current alcoholic drinks preferences stored by the app. \nTo overwrite a preference "
-                  "simply retype their preference as below.")
-            count = 1
-            for key, value in hot_drinks_pref.items():
-                print(f" | {count}. {key}'s hot drink pref is {value[0]}, {value[1]}, {value[2]} with {value[3]} "
-                      f"sugar(s).")
-                count += 1
+            header("Stored Alcoholic Drinks")
+            print("To overwrite a preference simply retype their preference as below.")
+            perprint.print_hot_dicts(hot_drinks_pref)
             s7a_add_hot_drink_prefs()
         elif preferences_selection == "B":
             os.system("Clear")
-            print("These are the current soft drinks preferences stored by the app. \nTo overwrite a preference simply "
-                  "retype their preference as below.")
-            count = 1
-            for key, value in soft_drinks_pref.items():
-                print(f" | {count}. {key}:{value}")
-                count += 1
+            header(" Stored Soft Drinks")
+            print("To overwrite a preference simply retype their preference as below.")
+            perprint.print_soft_or_alcy_dicts(soft_drinks_pref)
             s7b_add_soft_or_alcy_prefs(soft_drinks_pref)
-            persave.save_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
+            persave.save_csv_dictionary("src/persistence/softdrinksprefs.csv", soft_drinks_pref)
+            sn_nav_options()
         elif preferences_selection == "C":
-            os.system("Clear")
-            print("These are the current alcoholic drinks preferences stored by the app \nTo overwrite a preference simply retype their preference as below.")
-            count = 1
-            for key, value in alcoholic_drinks_pref.items():
-                print(f" | {count}. {key}'s drink of choice is {value}")
-                count += 1
+            header("Stored Alcoholic Drinks")
+            print("To overwrite a preference simply retype their preference as below.")
+            perprint.print_soft_or_alcy_dicts(alcoholic_drinks_pref)
             s7b_add_soft_or_alcy_prefs(alcoholic_drinks_pref)
-            persave.save_csv_dictionary("persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
+            persave.save_csv_dictionary("src/persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
+            sn_nav_options()
         else:
             os.system("Clear")
             print("Sorry, this is an invalid input")
@@ -292,7 +293,7 @@ def s7_drinks_pref_menu():
 
 def s7a_add_hot_drink_prefs():
     while True:
-        person = input("Who's hot drink preferences would you like to save to the app'?: \n(Hit ENTER to exit) Enter here: ")
+        person = input("\nWho's hot drink preferences would you like to save to the app'?: \n(Hit ENTER to exit) Enter here: ")
         if person == "":  # Break out from the loop when user hits ENTER
             break
         else:
@@ -301,14 +302,14 @@ def s7a_add_hot_drink_prefs():
             hot_drink_strength = input(f"What strength would you like that?: ")
             hot_drink_sugar = input(f"How many sugars would you like?: ")
             hot_drinks_pref[person] = [hot_drink_choice, hot_drink_milk, hot_drink_strength, hot_drink_sugar]
-            persave.save_hot_drinks("persistence/hotdrinksprefs.csv", hot_drinks_pref)
+            persave.save_hot_drinks("src/persistence/hotdrinksprefs.csv", hot_drinks_pref)
             return hot_drinks_pref
     sn_nav_options()
 
 
 def s7b_add_soft_or_alcy_prefs(dictionary):
     while True:
-        preference = input(f"Add a person and preference in format of 'person: drink'\n(Hit ENTER to exit) Enter here: ")
+        preference = input(f"\nAdd a person and preference in format of 'person: drink'\n(Hit ENTER to exit) Enter here: ")
         if preference == "":  # Break out from the loop when user hits ENTER
             break
         else:
@@ -316,11 +317,7 @@ def s7b_add_soft_or_alcy_prefs(dictionary):
             person = split_preference[0]
             drink = split_preference[1]
             dictionary[person] = drink
-            continue
-    persave.save_csv_dictionary("persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
-    persave.save_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
-    sn_nav_options()
-
+        return dictionary
 
 def s8_print_functions():
     header("   Print Functions")
@@ -329,35 +326,27 @@ def s8_print_functions():
                        upper())
     if print_choice == "A":
         os.system("Clear")
-        perprint.print_class_dict(people)
+        perprint.print_person(people)
+        sn_nav_options()
     elif print_choice == "B":
         os.system("Clear")
         s8a_print_drinks_lists()
+        sn_nav_options()
     elif print_choice == "C":
         header("Hot Drinks Preferences")
-        count = 1
-        for key, value in hot_drinks_pref.items():
-            print(f"{count}. {key}'s hot drink pref is {value[0]}, {value[1]}, {value[2]} with {value[3]} sugar(s).")
-            count += 1
+        perprint.print_hot_dicts(hot_drinks_pref)
         sn_nav_options()
     elif print_choice == "D":
         header("Soft Drinks Preferences")
-        print(f" |  Soft Drinks Preferences")
-        count = 1
-        for key, value in soft_drinks_pref.items():
-            print(f" | {count}. {key}'s drink of choice is {value}")
-            count += 1
+        perprint.print_soft_or_alcy_dicts(soft_drinks_pref)
         sn_nav_options()
     elif print_choice == "E":
         header("Alcoholic Drinks Preferences")
-        count = 1
-        for key, value in alcoholic_drinks_pref.items():
-            print(f" | {count}. {key}'s drink of choice is {value}")
-            count += 1
+        perprint.print_soft_or_alcy_dicts(alcoholic_drinks_pref)
         sn_nav_options()
     elif print_choice == "F":
         os.system("Clear")
-        print(" | Drinks Round |")
+        header(" Drinks Round")
         count = 1
         for key, value in new_round.items():
             print(f" | {count}. {key}'s would like a {value}")
@@ -371,16 +360,17 @@ def s8_print_functions():
 
 def s8a_print_drinks_lists():
     header("    Saved Drinks")
-    print("                          Hot Drinks")
+    print("                       Hot Drinks")
     print_line()
-    perprint.print_class_dict(hot_drinks)
+    perprint.print_hot_drinks(perdb.load_tables("hot_drinks"))
     print_line()
-    print("                          Soft Drinks")
+    print("                       Soft Drinks")
     print_line()
-    perprint.print_class_dict(soft_drinks)
-    print("                     Alcoholic Drinks")
+    perprint.print_soft_or_alcy_drinks(perdb.load_tables("soft_drinks"))
     print_line()
-    perprint.print_class_dict(alcoholic_drinks)
+    print("                      Alcoholic Drinks")
+    print_line()
+    perprint.print_soft_or_alcy_drinks(perdb.load_tables("alcoholic_drinks"))
     sn_nav_options()
 
 
@@ -416,9 +406,9 @@ def header(header_text):
 
 
 if __name__ == "__main__":
-    perload.load_hot_drinks_prefs("persistence/hotdrinksprefs.csv", hot_drinks_pref)
-    perload.load_csv_dictionary("persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
-    perload.load_csv_dictionary("persistence/softdrinksprefs.csv", soft_drinks_pref)
+    perload.load_hot_drinks_prefs("src/persistence/hotdrinksprefs.csv", hot_drinks_pref)
+    perload.load_csv_dictionary("src/persistence/alcoholicdrinksprefs.csv", alcoholic_drinks_pref)
+    perload.load_csv_dictionary("src/persistence/softdrinksprefs.csv", soft_drinks_pref)
     people = perdb.load_tables("people")
     hot_drinks = perdb.load_tables("hot_drinks")
     soft_drinks = perdb.load_tables("soft_drinks")
