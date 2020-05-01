@@ -1,4 +1,4 @@
-from persistence.database import save_people, delete_person, save_drinks, delete_drinks, Person, HotDrinks, SoftDrinks, AlcyDrinks
+from src.persistence import save_people, delete_person, save_drinks, delete_drinks, Person, HotDrinks, SoftDrinks, AlcyDrinks
 import unittest.mock
 from unittest.mock import Mock
 

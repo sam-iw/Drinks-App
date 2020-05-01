@@ -11,9 +11,10 @@ class TestPrefs(unittest.TestCase):
         mock_input.side_effect = ["Alex: Wine"]
         expected_outcome = {"Alex": "Wine"}
         # Act
-        actual_outcome = app.s7b_add_soft_or_alcy_prefs(test_preferences)
+        app.s7b_add_soft_or_alcy_prefs(test_preferences)
         # Assert
-        self.assertEqual(expected_outcome, actual_outcome)
+        self.assertEqual(expected_outcome, test_preferences)
+
 
     @unittest.mock.patch("builtins.input", return_value=unittest.mock)
     def test_add_hot_preference(self, mock_input):
